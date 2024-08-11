@@ -29,7 +29,7 @@ class DeepSARSAgent:
 
         self.epsilon = 0.01
         self.model = DeepSARSA(self.action_size)
-        self.model.load_weights('C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa_send/model')
+        self.model.load_weights('C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa _sh/model')
 
     # 입실론 탐욕 정책으로 행동 선택
     def get_action(self, state):
@@ -43,7 +43,7 @@ class DeepSARSAgent:
 if __name__ == "__main__":
     # 환경과 에이전트 생성
     env = Env(render_speed=0.001)
-    state_size = 15
+    state_size = 35
     action_space = [0, 1, 2, 3, 4]
     action_size = len(action_space)
     agent = DeepSARSAgent(state_size, action_size)

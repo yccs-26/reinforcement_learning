@@ -85,7 +85,7 @@ class DeepSARSAgent:
 if __name__ == "__main__":
     # 환경과 에이전트 생성
     env = Env(render_speed=0.001)  # 환경 객체 생성
-    state_size = 15   #상태 크기 설정
+    state_size = 87   #상태 크기 설정
     action_space = [0, 1, 2, 3, 4] # 행동 공간 설정
     action_size = len(action_space) #행동 크기 설정
     agent = DeepSARSAgent(state_size, action_size) #딥살사 에이전트 생성
@@ -125,9 +125,9 @@ if __name__ == "__main__":
                 pylab.plot(episodes, scores, 'b')
                 pylab.xlabel("episode")
                 pylab.ylabel("score")
-                pylab.savefig("C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa_send/graph.png")
+                pylab.savefig("C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa _sh/graph.png")
 
 
         # 100 에피소드마다 모델 저장
         if e % 10    == 0:
-            agent.model.save_weights('C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa_send/model', save_format='tf')
+            agent.model.save_weights('C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa _sh/model', save_format='tf')
