@@ -1,12 +1,13 @@
+
 import time
 import numpy as np
 import tkinter as tk
 from PIL import ImageTk, Image
 
 PhotoImage = ImageTk.PhotoImage
-UNIT = 40 # 픽셀 수
-HEIGHT = 20  # 그리드 세로
-WIDTH = 20  # 그리드 가로
+UNIT = 50  # 픽셀 수
+HEIGHT = 5  # 그리드 세로
+WIDTH = 5  # 그리드 가로
 
 np.random.seed(1)
 
@@ -14,7 +15,7 @@ np.random.seed(1)
 class Env(tk.Tk):
     def __init__(self, render_speed=0.01):
         super(Env, self).__init__()
-        self.render_speed=render_speed
+        self.render_speed=render_speed 
         self.action_space = ['u', 'd', 'l', 'r']
         self.action_size = len(self.action_space)
         self.title('DeepSARSA')
@@ -24,38 +25,17 @@ class Env(tk.Tk):
         self.counter = 0
         self.rewards = []
         self.goal = []
-        #이동 장애물 설정
+        # 장애물 설정
         self.set_reward([0, 1], -1)
-        self.set_reward([2, 6], -1)
-        self.set_reward([3, 3], -1)
-        self.set_reward([7, 2], -1)
-        self.set_reward([0, 1], -1)
-        self.set_reward([12, 12], -1)
-        self.set_reward([9, 18], -1)
-        self.set_reward([17, 2], -1)
-        self.set_reward([1, 9], -1)
-        self.set_reward([11, 10], -1)
-
-        # 고정 장애물 설정
-        self.set_reward([3, 0], -2)
-        self.set_reward([5, 5], -2)
-        self.set_reward([1, 5], -2)
-        self.set_reward([9, 0], -2)
-        self.set_reward([15, 15], -2)
-        self.set_reward([16, 4], -2)
-        self.set_reward([1, 19], -2) 
-        self.set_reward([4, 0], -2)
-        self.set_reward([18, 17], -2)
-        self.set_reward([18, 19], -2)
-        self.set_reward([7, 16], -2) 
+        self.set_reward([1, 2], -1)
+        self.set_reward([2, 3], -1)
         # 목표 지점 설정
-        self.set_reward([19, 19], 1)
+        self.set_reward([4, 4], 1)
 
     def _build_canvas(self):
-        canvas = tk.Canvas(self, bg='white',
+        canvas = tk.Canvas(self, bg='skyblue',
                            height=HEIGHT * UNIT,
                            width=WIDTH * UNIT)
-
         # 그리드 생성
         for c in range(0, WIDTH * UNIT, UNIT):  # 0~400 by 80
             x0, y0, x1, y1 = c, 0, c, HEIGHT * UNIT
@@ -68,23 +48,22 @@ class Env(tk.Tk):
         self.goal = []
         # 캔버스에 이미지 추가
         x, y = UNIT/2, UNIT/2
-        self.ship = canvas.create_image(x, y, image=self.shapes[0])
+        self.rectangle = canvas.create_image(x, y, image=self.shapes[0])
 
         canvas.pack()
 
         return canvas
 
     def load_images(self):
-        ship = PhotoImage(
-            Image.open("C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa _sh/ship.jpg").resize((20, 20)))
-        triangle = PhotoImage(
-            Image.open("C:/Users/82108/OneDrive/바탕 화면/RL_py/triangle.png").resize((20, 20)))
-        circle = PhotoImage(
-            Image.open("C:/Users/82108/OneDrive/바탕 화면/RL_py/circle.png").resize((20, 20)))
-        rock = PhotoImage(
-            Image.open("C:/Users/82108/OneDrive/바탕 화면/RL_py/Deepsa _sh/rock.jpg").resize((20, 20)))
+        boat = PhotoImage(
+            Image.open("boat.png").resize((30, 30)))
+        fish = PhotoImage(
+            Image.open("fish.png").resize((30, 30)))
+        port = PhotoImage(
+            Image.open("port.png").resize((30, 30)))
 
-        return ship, triangle,circle,rock
+
+        return boat, fish, port
 
     def reset_reward(self):
 
@@ -93,32 +72,12 @@ class Env(tk.Tk):
 
         self.rewards.clear()
         self.goal.clear()
-        self.set_reward([0, 1], -1)
-        self.set_reward([2, 6], -1)
-        self.set_reward([3, 3], -1)
-        self.set_reward([7, 2], -1)
-        self.set_reward([0, 1], -1)
-        self.set_reward([12, 12], -1)
-        self.set_reward([9, 18], -1)
-        self.set_reward([17, 2], -1)
-        self.set_reward([1, 9], -1)
-        self.set_reward([11, 10], -1)
-        #고정 장애물 설정
-        self.set_reward([3, 0], -2)
-        self.set_reward([5, 5], -2)
-       
-        self.set_reward([1, 5], -2)
-        self.set_reward([9, 0], -2)
-        self.set_reward([15, 15], -2)
-        self.set_reward([16, 4], -2)
-        self.set_reward([1, 19], -2) 
-        self.set_reward([4, 0], -2)
-        self.set_reward([18, 17], -2)
-        self.set_reward([18, 19], -2)
-        
-        self.set_reward([7, 16], -2) 
+        self.set_reward([0, 1], -1) 
+        self.set_reward([1, 2], -1)
+        self.set_reward([2, 3], -1)
+
         # #goal
-        self.set_reward([19, 19], 1)
+        self.set_reward([4, 4], 1)
 
     def set_reward(self, state, reward):
         state = [int(state[0]), int(state[1])]
@@ -134,19 +93,12 @@ class Env(tk.Tk):
             self.goal.append(temp['figure'])
 
 
-        elif reward == -1:
+        elif reward < 0:
             temp['direction'] = -1
             temp['reward'] = reward
             temp['figure'] = self.canvas.create_image((UNIT * x) + UNIT / 2,
                                                       (UNIT * y) + UNIT / 2,
                                                       image=self.shapes[1])
-        
-        elif reward == -2:
-            temp['direction'] = -2
-            temp['reward'] = reward
-            temp['figure'] = self.canvas.create_image((UNIT * x) + UNIT / 2,
-                                                      (UNIT * y) + UNIT / 2,
-                                                      image=self.shapes[3])
 
         temp['coords'] = self.canvas.coords(temp['figure'])
         temp['state'] = state
@@ -176,8 +128,8 @@ class Env(tk.Tk):
     def reset(self):
         self.update()
         time.sleep(0.5)
-        x, y = self.canvas.coords(self.ship)
-        self.canvas.move(self.ship, UNIT / 2 - x, UNIT / 2 - y)
+        x, y = self.canvas.coords(self.rectangle)
+        self.canvas.move(self.rectangle, UNIT / 2 - x, UNIT / 2 - y)
         self.reset_reward()
         return self.get_state()
 
@@ -188,12 +140,12 @@ class Env(tk.Tk):
         if self.counter % 2 == 1:
             self.rewards = self.move_rewards()
 
-        next_coords = self.move(self.ship, action)
+        next_coords = self.move(self.rectangle, action)
         check = self.check_if_reward(self.coords_to_state(next_coords))
         done = check['if_goal']
         reward = check['rewards']
 
-        self.canvas.tag_raise(self.ship)
+        self.canvas.tag_raise(self.rectangle)
 
         s_ = self.get_state()
 
@@ -201,7 +153,7 @@ class Env(tk.Tk):
 
     def get_state(self):
 
-        location = self.coords_to_state(self.canvas.coords(self.ship))
+        location = self.coords_to_state(self.canvas.coords(self.rectangle))
         agent_x = location[0]
         agent_y = location[1]
 
@@ -211,11 +163,8 @@ class Env(tk.Tk):
             reward_location = reward['state']
             states.append(reward_location[0] - agent_x)
             states.append(reward_location[1] - agent_y)
-            if reward['reward'] == -1:
+            if reward['reward'] < 0:
                 states.append(-1)
-                states.append(reward['direction'])
-            elif reward['reward'] == -2:
-                states.append(-2)
                 states.append(reward['direction'])
             else:
                 states.append(1)
@@ -248,11 +197,8 @@ class Env(tk.Tk):
             base_action[0] += UNIT
         elif target['direction'] == 1:
             base_action[0] -= UNIT
-        else:
-            pass
-            
 
-        if (target['figure'] is not self.ship
+        if (target['figure'] is not self.rectangle
            and s == [(WIDTH - 1) * UNIT, (HEIGHT - 1) * UNIT]):
             base_action = np.array([0, 0])
 
